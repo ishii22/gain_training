@@ -1,0 +1,48 @@
+QUESTION:-
+1. Insert Data: Insert a new document into the "employees" collection with the following information:
+      Name: John Smith
+      Position: Software Engineer
+      Department: Engineering
+      Salary: 85,000
+      Hire Date: January 15, 2023
+2. Update Data: Update the salary of all Software Engineers in the "employees" collection to 90,000.
+3. Query Data: Find all employees in the "Engineering" department whose salary is greater than 80,000.
+4. Delete Data: Remove all employees from the "Marketing" department.
+-------------------------------------------------------------------------------------------------------------
+        Orders Collection
+         1.order_date. 2.total_price. 3.order_by
+5. Data Aggregation: Calculate the total revenue generated from orders placed in between any two dates.
+   Assume the order documents have a "total_price" field representing the total price of the order. You should provide the total revenue amount.
+        products collection
+        1.product_code, 2.product_name, 3.product_category, 4.product_price, 5.product_quantity
+6. Indexing: The "products" collection is growing rapidly, and queries for product information are becoming slow. 
+   Create an index on the "product_code" field in the "products" collection to improve query performance. Confirm that the index has been successfully created.
+
+
+SOLUTION:-
+1.
+db.createCollection("employees");
+db.employees.insertOne({"name":"John Smith","position":"Software Engineer","department":"Engineering","salary":85000,"hire_date":"2023-01-15"});
+
+2.
+db.employees.updateMany({"position":"Software Engineer"},{$set:{"salary":90000}});
+
+3.
+db.employees.find({"department":"Engineering","salary":{$gt:80000}},{});
+
+4.
+db.employees.deleteMany({"department":"Marketing"},{});
+
+5.
+db.createCollection("orders");
+db.orders.insertOne({"order_date":ISODate("2023-10-12"),"total_price":250,"order_by":"Some company"});
+db.orders.insertOne({"order_date":ISODate("2023-12-12"),"total_price":50000,"order_by":"Some other company"});
+db.orders.insertOne({"order_date":ISODate("2023-11-11"),"total_price":25000,"order_by":"Some big company"});
+db.orders.aggregate([{$match : {order_date:{$gte:ISODate("2023-10-12"),$lt:ISODate("2023-12-12")}}},{ $group: {_id : null, total_revenue:{$sum:"$total_price"}}}]);
+
+
+6.
+db.createCollection("products");
+db.products.insertOne({"product_code":101,"product_name":"Pen","product_category":"Stationary","product_price":20,"product_quantity":100});
+db.products.createIndex({"product_code":1});
+db.products.getIndexes();
